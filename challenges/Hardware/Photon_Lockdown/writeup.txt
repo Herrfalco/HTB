@@ -1,0 +1,2 @@
+- sudo unsquashfs rootfs
+- grep -r "HTB" .
