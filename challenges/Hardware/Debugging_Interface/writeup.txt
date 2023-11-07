@@ -1,0 +1,3 @@
+> open live capture with SALELAE logic2
+> create async serial analyzer (1.000.000 / 32.02 = 31230)
+> flag in console output
