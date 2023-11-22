@@ -1,0 +1,4 @@
+> install qsstv
+> change sound source in options (from file)
+> click start and select file
+> get file
