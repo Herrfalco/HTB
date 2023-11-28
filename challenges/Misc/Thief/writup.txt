@@ -1,0 +1,14 @@
+> open capture with wireshark
+> file > export object > http > windowsupdate.exe
+> binwalk windowsupdate.exe 
+	DECIMAL       HEXADECIMAL     DESCRIPTION
+	--------------------------------------------------------------------------------
+	0             0x0             Microsoft executable, portable (PE)
+	147456        0x24000         CRC32 polynomial table, little endian
+	151552        0x25000         CRC32 polynomial table, big endian
+	155888        0x260F0         Copyright string: "Copyright 1995-2017 Mark Adler "
+	219768        0x35A78         PNG image, 256 x 256, 8-bit/color RGBA, non-interlaced
+	219809        0x35AA1         Zlib compressed data, best compression
+	...
+
+> dd bs=1 count=41 if=windowsupdate.exe of=image.png skip=219768
