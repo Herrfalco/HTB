@@ -6,3 +6,6 @@
 > use Detect It Ease
 	pyinstaller
 > pyinstxtractor-ng windowsupdate.exe
+> find wixnvke.exe.manifest
+	program starts with wixnke.pyc
+> decompile wixnke.pyc online > wixnke.py
