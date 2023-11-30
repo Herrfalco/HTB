@@ -55,7 +55,6 @@ class Helper:
 
 
 def encrypt(raw):
-    
     pad = lambda x: x + '\x00' * (256 - len(x))
     iv = Random.new().read(AES.block_size)
     key = 'The Bloodharbor!'
