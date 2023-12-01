@@ -1,11 +1,11 @@
 > open capture with wireshark
 > file > export object > http > windowsupdate.exe
-> binwalk windowsupdate.exe 
-
-> dd bs=1 count=41 if=windowsupdate.exe of=image.png skip=219768
 > use Detect It Ease
 	pyinstaller
 > pyinstxtractor-ng windowsupdate.exe
 > find wixnvke.exe.manifest
 	program starts with wixnke.pyc
 > decompile wixnke.pyc online > wixnke.py
+> data are encoded, mixed and exfiltrated using ping payloads
+> recover with home made extractor.py
+> read png image
