@@ -1,0 +1,20 @@
+> sudo ../../../utils/vol.py -f TrueSecrets.raw windows.filescan | grep Documents
+	0x724c038  100.0\Users\IEUser\Documents 128
+	0xbbf6158       \Users\IEUser\Documents\backup_development.zip  128
+	0xc50c550       \Users\IEUser\Documents\development.tc  128
+	0xc520b68       \Users\IEUser\Documents\desktop.ini     128
+	0xc54a0d8       \Users\Public\Documents 128
+	0xc56e038       \Users\Public\Documents 128
+
+> sudo ../../../utils/vol.py -f TrueSecrets.raw windows.dumpfiles --physaddr 0xbbf6158
+	Volatility 3 Framework 2.5.0
+	Progress:  100.00               PDB scanning finished                        
+	Cache   FileObject      FileName        Result
+
+	DataSectionObject       0xbbf6158       backup_development.zip  file.0xbbf6158.0x839339d0.DataSectionObject.backup_development.zip.dat
+	SharedCacheMap  0xbbf6158       backup_development.zip  file.0xbbf6158.0x9185db40.SharedCacheMap.backup_development.zip.vacb
+
+> mv file.0xbbf6158.0x839339d0.DataSectionObject.backup_development.zip.dat backup_development.zip
+> sudo unzip backup_development.zip       
+	Archive:  backup_development.zip
+	 extracting: development.tc          
