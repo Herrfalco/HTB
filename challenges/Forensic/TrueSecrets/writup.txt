@@ -1,20 +1,145 @@
-> sudo ../../../utils/vol.py -f TrueSecrets.raw windows.filescan | grep Documents
-	0x724c038  100.0\Users\IEUser\Documents 128
-	0xbbf6158       \Users\IEUser\Documents\backup_development.zip  128
-	0xc50c550       \Users\IEUser\Documents\development.tc  128
-	0xc520b68       \Users\IEUser\Documents\desktop.ini     128
-	0xc54a0d8       \Users\Public\Documents 128
-	0xc56e038       \Users\Public\Documents 128
+> user42@user42-VirtualBox:~/Work/HTB/challenges/Forensic/TrueSecrets$ sudo python ./volatility/vol.py -f TrueSecrets.raw imageinfo
+	Volatility Foundation Volatility Framework 2.6.1
+	INFO    : volatility.debug    : Determining profile based on KDBG search...
+		  Suggested Profile(s) : Win7SP1x86_23418, Win7SP0x86, Win7SP1x86_24000, Win7SP1x86
+			     AS Layer1 : IA32PagedMemoryPae (Kernel AS)
+			     AS Layer2 : FileAddressSpace (/home/user42/Work/HTB/challenges/Forensic/TrueSecrets/TrueSecrets.raw)
+			      PAE type : PAE
+				   DTB : 0x185000L
+				  KDBG : 0x82732c78L
+		  Number of Processors : 1
+	     Image Type (Service Pack) : 1
+			KPCR for CPU 0 : 0x82733d00L
+		     KUSER_SHARED_DATA : 0xffdf0000L
+		   Image date and time : 2022-12-14 21:33:30 UTC+0000
+	     Image local date and time : 2022-12-14 13:33:30 -0800
 
-> sudo ../../../utils/vol.py -f TrueSecrets.raw windows.dumpfiles --physaddr 0xbbf6158
-	Volatility 3 Framework 2.5.0
-	Progress:  100.00               PDB scanning finished                        
-	Cache   FileObject      FileName        Result
+> user42@user42-VirtualBox:~/Work/HTB/challenges/Forensic/TrueSecrets$ sudo python ./volatility/vol.py -f TrueSecrets.raw --profile=Win7SP1x86_23418 cmdline
+	Volatility Foundation Volatility Framework 2.6.1
+	************************************************************************
+	System pid:      4
+	************************************************************************
+	smss.exe pid:    252
+	Command line : \SystemRoot\System32\smss.exe
+	************************************************************************
+	csrss.exe pid:    320
+	Command line : %SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,12288,512 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16
+	************************************************************************
+	wininit.exe pid:    356
+	Command line : 
+	************************************************************************
+	csrss.exe pid:    368
+	Command line : %SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,12288,512 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16
+	************************************************************************
+	winlogon.exe pid:    396
+	************************************************************************
+	services.exe pid:    452
+	Command line : C:\Windows\system32\services.exe
+	************************************************************************
+	lsass.exe pid:    468
+	Command line : C:\Windows\system32\lsass.exe
+	************************************************************************
+	lsm.exe pid:    476
+	Command line : C:\Windows\system32\lsm.exe
+	************************************************************************
+	svchost.exe pid:    584
+	Command line : C:\Windows\system32\svchost.exe -k DcomLaunch
+	************************************************************************
+	VBoxService.ex pid:    644
+	Command line : C:\Windows\System32\VBoxService.exe
+	************************************************************************
+	svchost.exe pid:    696
+	Command line : C:\Windows\system32\svchost.exe -k RPCSS
+	************************************************************************
+	svchost.exe pid:    752
+	Command line : C:\Windows\System32\svchost.exe -k LocalServiceNetworkRestricted
+	************************************************************************
+	svchost.exe pid:    864
+	Command line : C:\Windows\System32\svchost.exe -k LocalSystemNetworkRestricted
+	************************************************************************
+	svchost.exe pid:    904
+	Command line : C:\Windows\system32\svchost.exe -k LocalService
+	************************************************************************
+	svchost.exe pid:    928
+	Command line : C:\Windows\system32\svchost.exe -k netsvcs
+	************************************************************************
+	svchost.exe pid:    992
+	************************************************************************
+	svchost.exe pid:   1116
+	Command line : C:\Windows\system32\svchost.exe -k NetworkService
+	************************************************************************
+	spoolsv.exe pid:   1228
+	Command line : C:\Windows\System32\spoolsv.exe
+	************************************************************************
+	svchost.exe pid:   1268
+	Command line : C:\Windows\system32\svchost.exe -k LocalServiceNoNetwork
+	************************************************************************
+	taskhost.exe pid:   1352
+	Command line : "taskhost.exe"
+	************************************************************************
+	dwm.exe pid:   1448
+	Command line : 
+	************************************************************************
+	explorer.exe pid:   1464
+	Command line : C:\Windows\Explorer.EXE
+	************************************************************************
+	svchost.exe pid:   1636
+	Command line : C:\Windows\System32\svchost.exe -k utcsvc
+	************************************************************************
+	svchost.exe pid:   1680
+	Command line : C:\Windows\system32\svchost.exe -k LocalServiceAndNoImpersonation
+	************************************************************************
+	wlms.exe pid:   1776
+	************************************************************************
+	VBoxTray.exe pid:   1832
+	Command line : "C:\Windows\System32\VBoxTray.exe" 
+	************************************************************************
+	sppsvc.exe pid:    352
+	************************************************************************
+	svchost.exe pid:   1632
+	************************************************************************
+	SearchIndexer. pid:    856
+	Command line : C:\Windows\system32\SearchIndexer.exe /Embedding
+	************************************************************************
+	TrueCrypt.exe pid:   2128
+	Command line : "C:\Program Files\TrueCrypt\TrueCrypt.exe" 
+	************************************************************************
+	svchost.exe pid:   2760
+	Command line : C:\Windows\System32\svchost.exe -k secsvcs
+	************************************************************************
+	WmiPrvSE.exe pid:   2332
+	Command line : C:\Windows\system32\wbem\wmiprvse.exe
+	************************************************************************
+	taskhost.exe pid:   2580
+	Command line : 
+	************************************************************************
+	7zFM.exe pid:   2176
+	Command line : "C:\Program Files\7-Zip\7zFM.exe" "C:\Users\IEUser\Documents\backup_development.zip"
+	************************************************************************
+	DumpIt.exe pid:   3212
+	Command line : "C:\Users\IEUser\Downloads\DumpIt.exe" 
+	************************************************************************
+	conhost.exe pid:    272
+	Command line : \??\C:\Windows\system32\conhost.exe "-180402527637560752-8319479621992226886-774806053592412399-20651748-1013740728
 
-	DataSectionObject       0xbbf6158       backup_development.zip  file.0xbbf6158.0x839339d0.DataSectionObject.backup_development.zip.dat
-	SharedCacheMap  0xbbf6158       backup_development.zip  file.0xbbf6158.0x9185db40.SharedCacheMap.backup_development.zip.vacb
+> user42@user42-VirtualBox:~/Work/HTB/challenges/Forensic/TrueSecrets$ sudo python ./volatility/vol.py -f TrueSecrets.raw --profile=Win7SP1x86_23418 filescan | grep -i document
+	Volatility Foundation Volatility Framework 2.6.1
+	0x000000000724c038      2      1 R--rwd \Device\HarddiskVolume1\Users\IEUser\Documents
+	0x000000000bbf6158      3      1 R--r-- \Device\HarddiskVolume1\Users\IEUser\Documents\backup_development.zip
+	0x000000000c50c550      2      1 RW---- \Device\HarddiskVolume1\Users\IEUser\Documents\development.tc
+	0x000000000c520b68      1      0 R--rwd \Device\HarddiskVolume1\Users\IEUser\Documents\desktop.ini
+	0x000000000c54a0d8      2      1 R--rwd \Device\HarddiskVolume1\Users\Public\Documents
+	0x000000000c56e038      2      1 R--rwd \Device\HarddiskVolume1\Users\Public\Documents
 
-> mv file.0xbbf6158.0x839339d0.DataSectionObject.backup_development.zip.dat backup_development.zip
-> sudo unzip backup_development.zip       
+> user42@user42-VirtualBox:~/Work/HTB/challenges/Forensic/TrueSecrets$ sudo python ./volatility/vol.py -f TrueSecrets.raw --profile=Win7SP1x86_23418 dumpfiles --physoffset=0x000000000bbf6158 -D .
+	Volatility Foundation Volatility Framework 2.6.1
+	DataSectionObject 0x0bbf6158   None   \Device\HarddiskVolume1\Users\IEUser\Documents\backup_development.zip
+	SharedCacheMap 0x0bbf6158   None   \Device\HarddiskVolume1\Users\IEUser\Documents\backup_development.zip
+
+> user42@user42-VirtualBox:~/Work/HTB/challenges/Forensic/TrueSecrets$ rm -rf *.vacb; mv *.dat backup_development.zip; unzip backup_development.zip 
 	Archive:  backup_development.zip
-	 extracting: development.tc          
+	 extracting: development.tc 
+
+> user42@user42-VirtualBox:~/Work/HTB/challenges/Forensic/TrueSecrets$ sudo python ./volatility/vol.py -f TrueSecrets.raw --profile=Win7SP1x86_23418 truecryptpassphrase
+	Volatility Foundation Volatility Framework 2.6.1
+	Found at 0x89ebf064 length 28: X2Hk2XbEJqWYsh8VdbSYg6WpG9g7
