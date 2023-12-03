@@ -25,78 +25,7 @@
 	csrss.exe pid:    320
 	Command line : %SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,12288,512 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16
 	************************************************************************
-	wininit.exe pid:    356
-	Command line : 
-	************************************************************************
-	csrss.exe pid:    368
-	Command line : %SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,12288,512 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16
-	************************************************************************
-	winlogon.exe pid:    396
-	************************************************************************
-	services.exe pid:    452
-	Command line : C:\Windows\system32\services.exe
-	************************************************************************
-	lsass.exe pid:    468
-	Command line : C:\Windows\system32\lsass.exe
-	************************************************************************
-	lsm.exe pid:    476
-	Command line : C:\Windows\system32\lsm.exe
-	************************************************************************
-	svchost.exe pid:    584
-	Command line : C:\Windows\system32\svchost.exe -k DcomLaunch
-	************************************************************************
-	VBoxService.ex pid:    644
-	Command line : C:\Windows\System32\VBoxService.exe
-	************************************************************************
-	svchost.exe pid:    696
-	Command line : C:\Windows\system32\svchost.exe -k RPCSS
-	************************************************************************
-	svchost.exe pid:    752
-	Command line : C:\Windows\System32\svchost.exe -k LocalServiceNetworkRestricted
-	************************************************************************
-	svchost.exe pid:    864
-	Command line : C:\Windows\System32\svchost.exe -k LocalSystemNetworkRestricted
-	************************************************************************
-	svchost.exe pid:    904
-	Command line : C:\Windows\system32\svchost.exe -k LocalService
-	************************************************************************
-	svchost.exe pid:    928
-	Command line : C:\Windows\system32\svchost.exe -k netsvcs
-	************************************************************************
-	svchost.exe pid:    992
-	************************************************************************
-	svchost.exe pid:   1116
-	Command line : C:\Windows\system32\svchost.exe -k NetworkService
-	************************************************************************
-	spoolsv.exe pid:   1228
-	Command line : C:\Windows\System32\spoolsv.exe
-	************************************************************************
-	svchost.exe pid:   1268
-	Command line : C:\Windows\system32\svchost.exe -k LocalServiceNoNetwork
-	************************************************************************
-	taskhost.exe pid:   1352
-	Command line : "taskhost.exe"
-	************************************************************************
-	dwm.exe pid:   1448
-	Command line : 
-	************************************************************************
-	explorer.exe pid:   1464
-	Command line : C:\Windows\Explorer.EXE
-	************************************************************************
-	svchost.exe pid:   1636
-	Command line : C:\Windows\System32\svchost.exe -k utcsvc
-	************************************************************************
-	svchost.exe pid:   1680
-	Command line : C:\Windows\system32\svchost.exe -k LocalServiceAndNoImpersonation
-	************************************************************************
-	wlms.exe pid:   1776
-	************************************************************************
-	VBoxTray.exe pid:   1832
-	Command line : "C:\Windows\System32\VBoxTray.exe" 
-	************************************************************************
-	sppsvc.exe pid:    352
-	************************************************************************
-	svchost.exe pid:   1632
+	...
 	************************************************************************
 	SearchIndexer. pid:    856
 	Command line : C:\Windows\system32\SearchIndexer.exe /Embedding
@@ -143,3 +72,7 @@
 > user42@user42-VirtualBox:~/Work/HTB/challenges/Forensic/TrueSecrets$ sudo python ./volatility/vol.py -f TrueSecrets.raw --profile=Win7SP1x86_23418 truecryptpassphrase
 	Volatility Foundation Volatility Framework 2.6.1
 	Found at 0x89ebf064 length 28: X2Hk2XbEJqWYsh8VdbSYg6WpG9g7
+
+> truecrypt development.tc
+> copy files to folder analyse AgentServer.cs (endocer)
+> use custom decoder.py to get the flag
