@@ -1,0 +1,39 @@
+> nmap -sV 10.10.11.234
+	Starting Nmap 7.94SVN ( https://nmap.org ) at 2023-12-06 18:40 CET
+	Nmap scan report for 10.10.11.234
+	Host is up (0.022s latency).
+	Not shown: 999 filtered tcp ports (no-response)
+	PORT   STATE SERVICE VERSION
+	80/tcp open  http    Apache httpd 2.4.56 ((Win64) OpenSSL/1.1.1t PHP/8.1.17)
+
+	Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+	Nmap done: 1 IP address (1 host up) scanned in 10.61 seconds
+
+> gobuster dir -u 10.10.11.234 -w /usr/share/wordlists/dirb/big.txt -x php,html -r -b 403,404 -t 50
+	===============================================================
+	Gobuster v3.6
+	by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+	===============================================================
+	[+] Url:                     http://10.10.11.234
+	[+] Method:                  GET
+	[+] Threads:                 50
+	[+] Wordlist:                /usr/share/wordlists/dirb/big.txt
+	[+] Negative Status codes:   403,404
+	[+] User Agent:              gobuster/3.6
+	[+] Extensions:              php,html
+	[+] Follow Redirect:         true
+	[+] Timeout:                 10s
+	===============================================================
+	Starting gobuster in directory enumeration mode
+	===============================================================
+	/Index.php            (Status: 200) [Size: 7534]
+	/assets               (Status: 200) [Size: 987]
+	/css                  (Status: 200) [Size: 978]
+	/examples             (Status: 503) [Size: 402]
+	/index.php            (Status: 200) [Size: 7534]
+	/js                   (Status: 200) [Size: 979]
+	/submit.php           (Status: 200) [Size: 0]
+	Progress: 61407 / 61410 (100.00%)
+	===============================================================
+	Finished
+	===============================================================
