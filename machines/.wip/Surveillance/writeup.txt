@@ -1,0 +1,35 @@
+> nmap -p- surveillance.htb
+	Starting Nmap 7.94SVN ( https://nmap.org ) at 2023-12-10 19:10 CET
+	Nmap scan report for surveillance.htb (10.10.11.245)
+	Host is up (0.021s latency).
+	Not shown: 65533 closed tcp ports (conn-refused)
+	PORT   STATE SERVICE
+	22/tcp open  ssh
+	80/tcp open  http
+
+	Nmap done: 1 IP address (1 host up) scanned in 6.72 seconds
+
+> dirsearch -u surveillance.htb -w /usr/share/wordlists/dirb/big.txt -t 50
+
+	  _|. _ _  _  _  _ _|_    v0.4.3.post1
+	 (_||| _) (/_(_|| (_| )    
+
+	Extensions: php, aspx, jsp, html, js | HTTP method: GET | Threads: 50 | Wordlist size: 20469
+
+	Output File: /home/herrfalco/Work/HTB/machines/Visual/reports/_surveillance.htb/_23-12-10_18-50-31.txt
+
+	Target: http://surveillance.htb/
+
+	[18:50:31] Starting:                                                                                                                                       
+	[18:50:32] 200 -  304B  - /.htaccess
+	[18:52:05] 302 -    0B  - /admin  ->  http://surveillance.htb/admin/login   
+	[18:55:14] 301 -  178B  - /css  ->  http://surveillance.htb/css/            
+	[18:57:13] 301 -  178B  - /fonts  ->  http://surveillance.htb/fonts/        
+	[18:58:32] 301 -  178B  - /images  ->  http://surveillance.htb/images/      
+	[18:58:37] 301 -  178B  - /img  ->  http://surveillance.htb/img/            
+	[18:58:42] 200 -    1B  - /index                                            
+	[18:59:13] 301 -  178B  - /js  ->  http://surveillance.htb/js/              
+	[19:00:03] 302 -    0B  - /logout  ->  http://surveillance.htb/             
+	[19:07:42] 418 -   24KB - /wp-admin                                         
+										     
+	Task Completed 
